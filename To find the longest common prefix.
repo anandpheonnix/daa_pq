@@ -1,24 +1,69 @@
 #include <stdio.h>
-#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-void longestCommonPrefix(char strs[][100], int n) {
+#define ALPHABET_SIZE 26
+
+struct TrieNode {
+    struct TrieNode *children[ALPHABET_SIZE];
+    bool isEndOfWord;
+};
+
+struct TrieNode* createNode() {
+    struct TrieNode *node = malloc(sizeof(struct TrieNode));
+    node->isEndOfWord = false;
+    for (int i = 0; i < ALPHABET_SIZE; i++)
+        node->children[i] = NULL;
+    return node;
+}
+
+void insert(struct TrieNode *root, const char *word) {
+    struct TrieNode *curr = root;
+    while (*word) {
+        int idx = *word - 'a';
+        if (curr->children[idx] == NULL)
+            curr->children[idx] = createNode();
+        curr = curr->children[idx];
+        word++;
+    }
+    curr->isEndOfWord = true;
+}
+
+int countChildren(struct TrieNode *node, int *index) {
+    int count = 0;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (node->children[i]) {
+            count++;
+            *index = i;
+        }
+    }
+    return count;
+}
+
+void longestCommonPrefix(struct TrieNode *root) {
+    struct TrieNode *curr = root;
+    int index;
     char prefix[100];
-    strcpy(prefix, strs[0]);
+    int len = 0;
 
-    for (int i = 1; i < n; i++) {
-        int j = 0;
-        while (prefix[j] && strs[i][j] && prefix[j] == strs[i][j])
-            j++;
-        prefix[j] = '\0';
+    while (!curr->isEndOfWord && countChildren(curr, &index) == 1) {
+        prefix[len++] = index + 'a';
+        curr = curr->children[index];
     }
 
+    prefix[len] = '\0';
     printf("%s", prefix);
 }
 
 int main() {
-    char strs[][100] = {"flower", "flow", "flight"};
+    char words[][20] = {"flower", "flow", "flight"};
     int n = 3;
 
-    longestCommonPrefix(strs, n);
+    struct TrieNode *root = createNode();
+
+    for (int i = 0; i < n; i++)
+        insert(root, words[i]);
+
+    longestCommonPrefix(root);
     return 0;
 }

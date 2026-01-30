@@ -36,6 +36,21 @@ void insert(struct TrieNode *root, const char *word) {
     current->isEndOfWord = true;
 }
 
+bool search(struct TrieNode *root, const char *word) {
+    struct TrieNode *current = root;
+
+    while (*word) {
+        int index = *word - 'a';
+
+        if (current->children[index] == NULL)
+            return false;
+
+        current = current->children[index];
+        word++;
+    }
+    return current->isEndOfWord;
+}
+
 int main() {
     struct TrieNode *root = createNode();
 
@@ -43,7 +58,10 @@ int main() {
     insert(root, "app");
     insert(root, "bat");
 
-    printf("Words inserted into Trie successfully\n");
+    printf("%d\n", search(root, "apple"));
+    printf("%d\n", search(root, "app"));
+    printf("%d\n", search(root, "bat"));
+    printf("%d\n", search(root, "bad"));
 
     return 0;
 }

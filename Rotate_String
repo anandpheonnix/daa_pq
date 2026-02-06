@@ -1,0 +1,34 @@
+#include<stdio.h>
+#include<stdbool.h>
+#include<stdlib.h>
+#include<string.h>
+
+bool rotateString(char * s, char * goal){
+    int len_s = strlen(s);
+    int len_g = strlen(goal);
+    if(len_s != len_g){
+        return false;
+    }
+    char *buffer = (char *) malloc(sizeof(char) * (len_s * 2 + 1));
+    strcpy(buffer, s);
+    strcat(buffer, s);
+    
+    if(strstr(buffer, goal) != NULL){
+        free(buffer);
+        return true;
+        
+    }
+    free(buffer);
+    return false;
+}
+
+int main(){
+    char s[] = "abcde";
+    char goal[] = "cdeab";
+    if(rotateString(s, goal)){
+        printf("True\n");
+    }else{
+        printf("False\n");
+        
+    }
+}

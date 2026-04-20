@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    
+    unordered_set<string> wordSet;
+    unordered_map<string, bool> memo;
+    
+    // DFS function to check if word can be formed
+    bool dfs(string word) {
+        if (memo.count(word)) return memo[word];
+        
+        for (int i = 1; i < word.size(); i++) {
+            string prefix = word.substr(0, i);
+            string suffix = word.substr(i);
+            
+            // if prefix exists AND suffix exists OR can be formed
+            if (wordSet.count(prefix)) {
+                if (wordSet.count(suffix) || dfs(suffix)) {
+                    return memo[word] = true;
+                }
+            }
+        }
+        
+        return memo[word] = false;
+    }
+    
+    vector<string> findAllConcatenatedWordsInADict(vector<string>& words) {
+        vector<string> result;
+        
+        // insert all words into set
+        for (auto &w : words) {
+            if (!w.empty())
+                wordSet.insert(w);
+        }
+        
+        // check each word
+        for (auto &word : words) {
+            if (word.empty()) continue;
+            
+            wordSet.erase(word); // avoid using itself
+            
+            if (dfs(word)) {
+                result.push_back(word);
+            }
+            
+            wordSet.insert(word); // add back
+        }
+        
+        return result;
+    }
+};

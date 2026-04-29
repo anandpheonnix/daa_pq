@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n;                  // number of items
+int capacity;           // bin capacity
+int best = INT_MAX;     // minimum bins found
+
+// Backtracking function
+void solve(vector<int>& items, vector<int>& bins, int index) {
+    if (index == n) {
+        best = min(best, (int)bins.size());
+        return;
+    }
+
+    // Try placing item in existing bins
+    for (int i = 0; i < bins.size(); i++) {
+        if (bins[i] + items[index] <= capacity) {
+            bins[i] += items[index];
+
+            solve(items, bins, index + 1);
+
+            bins[i] -= items[index]; // backtrack
+        }
+    }
+
+    // Try placing item in a new bin
+    bins.push_back(items[index]);
+    solve(items, bins, index + 1);
+    bins.pop_back(); // backtrack
+}
+
+int main() {
+    cout << "Enter number of items: ";
+    cin >> n;
+
+    vector<int> items(n);
+    cout << "Enter item weights:\n";
+    for (int i = 0; i < n; i++) {
+        cin >> items[i];
+    }
+
+    cout << "Enter bin capacity: ";
+    cin >> capacity;
+
+    // Sort in descending order (optimization)
+    sort(items.begin(), items.end(), greater<int>());
+
+    vector<int> bins;
+
+    solve(items, bins, 0);
+
+    cout << "Minimum number of bins required: " << best << endl;
+
+    return 0;
+}
